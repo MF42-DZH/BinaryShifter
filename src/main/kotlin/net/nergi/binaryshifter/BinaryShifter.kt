@@ -5,7 +5,7 @@ import java.util.Random
 @ExperimentalUnsignedTypes
 class BinaryShifter {
     companion object {
-        val inpRegString: String = "(and|or|xor|not|shl|shr) ([0-9]+)(b?)"
+        const val inpRegString: String = "(and|or|xor|not|shl|shr) ([0-9]+)"
 
         private val random: Random = Random()
         private val inpReg: Regex = Regex(inpRegString)
@@ -19,9 +19,14 @@ class BinaryShifter {
 
     private var currentValue: UInt = 0u
 
+    @Throws(IllegalArgumentException::class)
     fun startGame(diff: Difficulty) {
         if (gameStarted) {
             return
+        }
+
+        if (diff == Difficulty.UNDEF) {
+            throw IllegalArgumentException("Invalid difficulty! [$diff]")
         }
 
         difficulty = diff
@@ -37,7 +42,7 @@ class BinaryShifter {
 
             goalValue = goalValue and difficulty.i
             currentValue = currentValue and difficulty.i
-        } while (goalValue == currentValue)
+        } while (goalValue == currentValue || goalValue == 0u || currentValue == 0u)
 
         gameStarted = true
     }
@@ -49,16 +54,8 @@ class BinaryShifter {
         val lower = str.toLowerCase()
         val matchResult = inpReg.find(lower)
         if (matchResult != null) {
-            val (op, num, b) = matchResult.groupValues
-            val number = if (b.isNotEmpty()) {
-                if (num.any { it !in listOf('0', '1') }) {
-                    throw IllegalArgumentException("Invalid binary number! [$lower]")
-                }
-
-                num.toUInt(2)
-            } else {
-                num.toUInt()
-            }
+            val (op, num) = matchResult.groupValues
+            val number = num.toUInt()
 
             currentValue = when (op) {
                 "and" -> currentValue and number
