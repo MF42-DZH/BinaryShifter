@@ -7,7 +7,7 @@ import java.util.Scanner
 val scn = Scanner(System.`in`)
 
 @ExperimentalUnsignedTypes
-fun main(args: Array<String>) {
+fun main() {
     // Game
     val bshift = BinaryShifter()
 
@@ -15,16 +15,37 @@ fun main(args: Array<String>) {
     println("Select difficulty:\n(0) Easy\n(1) Normal\n(2) Hard")
 
     while (true) {
-        val nxt = scn.next().filter { !it.isWhitespace() }
+        val nxt = scn.nextLine().filter { !it.isWhitespace() }
         if (nxt.isInteger()) {
             when (nxt.toInt()) {
-                0 -> bshift.startGame(Difficulty.EASY)
-                1 -> bshift.startGame(Difficulty.NORMAL)
-                2 -> bshift.startGame(Difficulty.HARD)
+                0 -> {
+                    bshift.startGame(Difficulty.EASY)
+                    break
+                }
+                1 -> {
+                    bshift.startGame(Difficulty.NORMAL)
+                    break
+                }
+                2 -> {
+                    bshift.startGame(Difficulty.HARD)
+                    break
+                }
                 else -> pass
             }
         }
 
-        println("\nInvalid difficulty. Please select a correct difficulty.")
+        println("\nInvalid difficulty. Please select a valid difficulty.")
     }
+
+    do {
+        println(bshift)
+        try {
+            val inp = scn.nextLine().filter { it !in "\r\n" }
+            bshift.parseInput(inp)
+        } catch (e: IllegalArgumentException) {
+            println(e)
+        }
+    } while (!bshift.hasWon())
+
+    println("Congratulations! You've won!")
 }

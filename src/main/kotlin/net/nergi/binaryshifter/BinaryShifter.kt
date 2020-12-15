@@ -54,7 +54,7 @@ class BinaryShifter {
         val lower = str.toLowerCase()
         val matchResult = inpReg.find(lower)
         if (matchResult != null) {
-            val (op, num) = matchResult.groupValues
+            val (_, op, num) = matchResult.groupValues
             val number = num.toUInt()
 
             currentValue = when (op) {
@@ -81,5 +81,14 @@ class BinaryShifter {
         }
 
         return b
+    }
+
+    override fun toString(): String {
+        val sb = StringBuffer()
+        sb.append("Current Value: $currentValue\n")
+        sb.append("   Goal Value: $goalValue\n")
+        sb.append("-- INPUT BELOW --")
+
+        return sb.toString()
     }
 }
