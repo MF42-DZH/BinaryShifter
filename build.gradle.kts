@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "nergi.net"
-version = "1.0-SNAPSHOT"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -33,4 +33,17 @@ tasks.withType<KotlinCompile>() {
 
 application {
     mainClassName = "MainKt"
+}
+
+val jar by tasks.getting(Jar::class) {
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+        attributes["Implementation-Version"] = "1.0.1"
+    }
+
+    from ({
+        configurations.runtimeClasspath.get().filter {
+            it.name.endsWith("jar")
+        }.map { zipTree(it) }
+    })
 }

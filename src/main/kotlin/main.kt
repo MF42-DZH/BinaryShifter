@@ -2,15 +2,13 @@ import net.nergi.binaryshifter.BinaryShifter
 import net.nergi.binaryshifter.Difficulty
 import net.nergi.binaryshifter.isInteger
 import net.nergi.binaryshifter.pass
+import java.lang.RuntimeException
 import java.util.Scanner
 
 val scn = Scanner(System.`in`)
 
 @ExperimentalUnsignedTypes
 fun main() {
-    // Game
-    val bshift = BinaryShifter()
-
     // Create game
     println("Select difficulty:\n(0) Easy\n(1) Normal\n(2) Hard")
 
@@ -19,33 +17,47 @@ fun main() {
         if (nxt.isInteger()) {
             when (nxt.toInt()) {
                 0 -> {
-                    bshift.startGame(Difficulty.EASY)
+                    BinaryShifter.startGame(Difficulty.EASY)
                     break
                 }
                 1 -> {
-                    bshift.startGame(Difficulty.NORMAL)
+                    BinaryShifter.startGame(Difficulty.NORMAL)
                     break
                 }
                 2 -> {
-                    bshift.startGame(Difficulty.HARD)
+                    BinaryShifter.startGame(Difficulty.HARD)
                     break
                 }
                 else -> pass
+            }
+        } else {
+            if (nxt.toLowerCase() == "exit") {
+                println("\nYou have exited the game.")
+                return
             }
         }
 
         println("\nInvalid difficulty. Please select a valid difficulty.")
     }
 
+    print('\n')
+
     do {
-        println(bshift)
+        println(BinaryShifter)
         try {
             val inp = scn.nextLine().filter { it !in "\r\n" }
-            bshift.parseInput(inp)
+            BinaryShifter.parseInput(inp)
         } catch (e: IllegalArgumentException) {
             println(e)
+        } catch (e: RuntimeException) {
+            break
         }
-    } while (!bshift.hasWon())
+        print('\n')
+    } while (!BinaryShifter.hasWon())
 
-    println("$bshift\n\nCongratulations! You've won!")
+    if (BinaryShifter.hasWon()) {
+        println("$BinaryShifter\n\nCongratulations! You've won!")
+    } else {
+        println("\n$BinaryShifter\n\nYou have exited the game.")
+    }
 }

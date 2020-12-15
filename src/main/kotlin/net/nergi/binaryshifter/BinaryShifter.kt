@@ -2,14 +2,36 @@ package net.nergi.binaryshifter
 
 import java.util.Random
 
+// Rotate bits.
+// Positive: left
 @ExperimentalUnsignedTypes
-class BinaryShifter {
-    companion object {
-        const val inpRegString: String = "(and|or|xor|not|shl|shr) ([0-9]+)"
-
-        private val random: Random = Random()
-        private val inpReg: Regex = Regex(inpRegString)
+fun UInt.rotate(width: Int, amt: Int): UInt {
+    var s = String.format("%${width}s", this.toString(2)).replace(' ', '0')
+    return when {
+        amt > 0 -> {
+            for (i in 0 until amt) {
+                val c = s[0]
+                s = s.drop(1) + c
+            }
+            s.toUInt(2)
+        }
+        amt < 0 -> {
+            for (i in 0 until -amt) {
+                val c = s.last()
+                s = c + s.dropLast(1)
+            }
+            s.toUInt(2)
+        }
+        else -> this
     }
+}
+
+@ExperimentalUnsignedTypes
+object BinaryShifter {
+    const val inpRegString: String = "(rotl|rotr|shl|shr) ([0-9]+)"
+
+    private val random: Random = Random()
+    private val inpReg: Regex = Regex(inpRegString)
 
     private var gameStarted = false
 
@@ -49,21 +71,36 @@ class BinaryShifter {
 
     // Inputs are assumed to be in the form
     // [OP] [NUMERIC-STRING / BINARY-STRING of length <= difficulty length][b]
-    @Throws(IllegalArgumentException::class)
+    @Throws(IllegalArgumentException::class, RuntimeException::class)
     fun parseInput(str: String) {
+        val bitCnt = when (difficulty) {
+            Difficulty.UNDEF -> 0
+            Difficulty.EASY -> 8
+            Difficulty.NORMAL -> 16
+            Difficulty.HARD -> 32
+        }
+
         val lower = str.toLowerCase()
+        if (lower == "exit") {
+            throw RuntimeException("User exited.")
+        }
+
+        if (lower == "not") {
+            currentValue = currentValue.inv() and difficulty.i
+            return
+        }
+
         val matchResult = inpReg.find(lower)
         if (matchResult != null) {
             val (_, op, num) = matchResult.groupValues
-            val number = num.toUInt()
+            val number = num.toInt()
 
             currentValue = when (op) {
-                "and" -> currentValue and number
-                "or" -> currentValue or number
-                "xor" -> currentValue xor number
                 "not" -> currentValue.inv()
-                "shl" -> currentValue shl number.toInt()
-                "shr" -> currentValue shr number.toInt()
+                "rotl" -> currentValue.rotate(bitCnt, number)
+                "rotr" -> currentValue.rotate(bitCnt, -number)
+                "shl" -> currentValue shl number
+                "shr" -> currentValue shr number
                 else -> throw IllegalArgumentException("I have no idea how you got here. [$lower]")
             }
 
@@ -85,9 +122,19 @@ class BinaryShifter {
 
     override fun toString(): String {
         val sb = StringBuffer()
-        sb.append("Current Value: $currentValue\n")
-        sb.append("   Goal Value: $goalValue\n")
-        sb.append("-- INPUT BELOW --")
+        val bitCnt = when (difficulty) {
+            Difficulty.UNDEF -> 0
+            Difficulty.EASY -> 8
+            Difficulty.NORMAL -> 16
+            Difficulty.HARD -> 32
+        }
+
+        val cv = String.format("%${bitCnt}s", currentValue.toString(2)).replace(' ', '0')
+        val gv = String.format("%${bitCnt}s", goalValue.toString(2)).replace(' ', '0')
+
+        sb.append("Current Value: $cv\n")
+        sb.append("   Goal Value: $gv\n")
+        sb.append("-- INPUT BELOW | rotl n / rotr n / shl n / shr n / not / exit --")
 
         return sb.toString()
     }

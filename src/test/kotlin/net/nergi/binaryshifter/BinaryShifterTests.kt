@@ -11,16 +11,16 @@ class BinaryShifterTests {
         var currentMatch: MatchResult?
 
         // Test 1: Valid input - Full match
-        var currentString = "and 101"
+        var currentString = "rotl 101"
         currentMatch = reg.find(currentString)
-        assertEquals(listOf(currentString, "and", "101"), currentMatch?.groupValues)
+        assertEquals(listOf(currentString, "rotl", "101"), currentMatch?.groupValues)
 
         // Test 2: Valid input - Different operation, different number
-        currentString = "or 255"
+        currentString = "shr 255"
         currentMatch = reg.find(currentString)
-        assertEquals(listOf(currentString, "or", "255"), currentMatch?.groupValues)
+        assertEquals(listOf(currentString, "shr", "255"), currentMatch?.groupValues)
 
-        // Test 3: Invalid input - No number
+        // Test 3: Invalid input - Invalid operation
         currentString = "and"
         currentMatch = reg.find(currentString)
         assertEquals(null, currentMatch?.groupValues)
@@ -34,5 +34,13 @@ class BinaryShifterTests {
         currentString = ""
         currentMatch = reg.find(currentString)
         assertEquals(null, currentMatch?.groupValues)
+    }
+
+    @Test
+    fun `test rotate function`() {
+        assertEquals(2u, 1u.rotate(32, 1))
+        assertEquals(1u, 2u.rotate(32, -1))
+        assertEquals(1u, 128u.rotate(8, 1))
+        assertEquals(128u, 1u.rotate(8, -1))
     }
 }
