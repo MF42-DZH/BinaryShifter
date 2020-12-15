@@ -47,5 +47,5 @@ fun main() {
         }
     } while (!bshift.hasWon())
 
-    println("Congratulations! You've won!")
+    println("$bshift\n\nCongratulations! You've won!")
 }
