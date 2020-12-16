@@ -10,7 +10,7 @@ val scn = Scanner(System.`in`)
 @ExperimentalUnsignedTypes
 fun main() {
     // Create game
-    println("Select difficulty:\n(0) Easy\n(1) Normal\n(2) Hard")
+    println("Select difficulty or exit:\n(0) Easy\n(1) Normal\n(2) Hard")
 
     while (true) {
         val nxt = scn.nextLine().filter { !it.isWhitespace() }

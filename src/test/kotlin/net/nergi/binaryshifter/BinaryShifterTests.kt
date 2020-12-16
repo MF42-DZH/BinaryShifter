@@ -43,4 +43,20 @@ class BinaryShifterTests {
         assertEquals(1u, 128u.rotate(8, 1))
         assertEquals(128u, 1u.rotate(8, -1))
     }
+
+    @Test
+    fun `test difficulty strings`() {
+        assertEquals("UNDEF", Difficulty.UNDEF.toString())
+        assertEquals("EASY", Difficulty.EASY.toString())
+        assertEquals("NORMAL", Difficulty.NORMAL.toString())
+        assertEquals("HARD", Difficulty.HARD.toString())
+    }
+
+    @Test
+    fun `test difficulty numbers`() {
+        assertEquals(0u, Difficulty.UNDEF.i)
+        assertEquals(255u, Difficulty.EASY.i)
+        assertEquals(65535u, Difficulty.NORMAL.i)
+        assertEquals(UInt.MAX_VALUE, Difficulty.HARD.i)
+    }
 }
